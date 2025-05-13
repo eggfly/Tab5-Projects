@@ -26,27 +26,15 @@ M5Canvas canvas[2];
 
 void setup(void)
 {
-  Serial.begin(115200);
-  delay(1000);
-  setCpuFrequencyMhz(400);
-  uint32_t freqMhz = getCpuFrequencyMhz(); // or ESP.getCpuFreqMHz()
-  Serial.printf("CPU Freq: %d MHz\n", freqMhz);
-  setCpuFrequencyMhz(40);
-  freqMhz = getCpuFrequencyMhz();
-  Serial.printf("After setCpuFrequencyMhz(40): %d MHz\n", freqMhz);
-  Serial.println("M5GFX Conway's Game of Life");
   display.begin();
-  Serial.println("M5GFX init");
-  display.setColorDepth(16);
-  Serial.println("M5GFX setColorDepth");
-  // display.setColorDepth(8);
+  display.setColorDepth(8);
   // display.setEpdMode(epd_mode_t::epd_fastest);
 
-  // if (display.width() < display.height())
-  // {
-  //   display.setRotation(display.getRotation() ^ 1);
-  //   display.setPivot(display.width() /2 -0.5, display.height() /2 - 0.5);
-  // }
+  if (display.width() < display.height())
+  {
+    display.setRotation(display.getRotation() ^ 1);
+    display.setPivot(display.width() /2 -0.5, display.height() /2 - 0.5);
+  }
 
   int z = 0;
   int width;
