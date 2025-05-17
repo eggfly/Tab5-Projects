@@ -8,11 +8,22 @@
  */
 
 #include <M5GFX.h>
+#include "WQXUPBMP.h"
+#include "WQXUPBMP_1.h"
+#include "WQXUPBMP_2.h"
+#include "WQXUPBMP_PNG.h"
+#include "WQXUPBMP_BMP.h"
+
 M5GFX tft;
 
+M5Canvas canvas(&tft);
 
 unsigned long total = 0;
 unsigned long tn = 0;
+
+#define SCREEN_WIDTH 720
+#define SCREEN_HEIGHT 1280
+
 void setup()
 {
   Serial.begin(115200);
@@ -20,14 +31,27 @@ void setup()
   Serial.println("");
   Serial.println("M5GFX library Test!");
 
-  tft.setBrightness(1);
+  // tft.setBrightness(1);
   tft.init();
   Serial.printf("tft.init()\n");
-  // tft.setRotation(0);
-  tft.startWrite();
-  tft.endWrite();
-}
 
+  canvas.setColorDepth(16);
+  canvas.createSprite(SCREEN_WIDTH, SCREEN_HEIGHT);
+  canvas.createPalette();
+  canvas.setPaletteColor(1, TFT_WHITE);
+  canvas.setPivot(canvas.width() / 2 - 0.5, canvas.height() / 2 - 0.5);
+  canvas.fillScreen(TFT_DARKGRAY);
+  // canvas.fillRect(0, 0, 720, 720, TFT_RED);
+  // 720 x 894
+  // canvas.drawBmp(WQXUPBMP_BMP, 1931096, 0, 0);
+  canvas.drawPng(WQXUPBMP_PNG, 693673, 0, (1280 - 894) / 2);
+  // canvas.drawBmp(WQXUPBMP_BMP, 0, 0);
+  tft.startWrite();
+  // canvas.pushSprite(0, 0);
+  canvas.pushSprite(&tft, 0, 0);
+  tft.endWrite();
+  delay(10000);
+}
 
 void printnice(int32_t v)
 {
