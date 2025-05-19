@@ -40,12 +40,25 @@
 #define SD_MMC_D3 42
 #endif
 
-// I2S GPIOs, the names refer on ES8388, AS1 Audio Kit V2.2 3378
+#define USE_EXTERNAL_AUDIO_MODULE
+
+// 还是外置Audio模块音质更好点
+#ifdef USE_EXTERNAL_AUDIO_MODULE
+
+#define I2S_DSIN 51 // pin not used
+#define I2S_BCLK 48
+#define I2S_LRC 2
+#define I2S_MCLK 35
+#define I2S_DOUT 47
+
+#else
+
 #define I2S_DSIN 28 // pin not used
 #define I2S_BCLK 27
 #define I2S_LRC 29
 #define I2S_MCLK 30
 #define I2S_DOUT 26
+#endif
 
 // I2C GPIOs
 #define IIC_CLK 32
@@ -189,9 +202,9 @@ void setup()
     // audio.connecttohost("http://42.193.120.65:8002/%E9%80%83%E8%B7%91%E8%AE%A1%E5%88%92-%E9%98%B3%E5%85%89%E7%85%A7%E8%BF%9B%E5%9B%9E%E5%BF%86%E9%87%8C.mp3");
     // audio.connecttoFS(SD_MMC, "/二十一世纪，当我们还年轻时.flac");
     // audio.connecttoFS(MY_SD, "/server/达达-Song F.mp3");
-    audio.connecttoFS(MY_SD, "/五月天/最重要的小事.mp3");
+    // audio.connecttoFS(MY_SD, "/五月天/最重要的小事.mp3");
     // audio.connecttoFS(SD_MMC, "/渡口.wav");
-    // audio.connecttoFS(SD_MMC, "/ygzjhyl.mp3");
+    audio.connecttoFS(SD_MMC, "/ygzjhyl.mp3");
 
     // audio.connecttohost("http://mp3channels.webradio.antenne.de:80/oldies-but-goldies");
     //  audio.connecttohost("http://dg-rbb-http-dus-dtag-cdn.cast.addradio.de/rbb/antennebrandenburg/live/mp3/128/stream.mp3");
