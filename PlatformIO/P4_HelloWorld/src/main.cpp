@@ -42,6 +42,7 @@ void printMemInfo()
 }
 
 M5GFX tft;
+M5GFX &display = tft;
 
 M5Canvas canvas(&tft);
 
@@ -161,7 +162,6 @@ void setup()
   // eggfly modified branch has this function
   gfx->setFramebuffer((uint16_t *)sharedCanvasBuffer);
   playerSprite->setUTF8Print(true); // enable UTF8 support for the Arduino print() function
-
 
   playerSprite->setTextSize(1);
   playerSprite->setTextColor(MSB_16(TFT_RED));
@@ -1904,6 +1904,61 @@ uint32_t testFilledRoundRects()
   Written by Limor Fried/Ladyada for Adafruit Industries.
   MIT license, all text above must be included in any redistribution
  ****************************************************/
+
+void touch_test_loop()
+{
+  static bool drawed = false;
+  lgfx::touch_point_t tp[5];
+
+  int nums = display.getTouchRaw(tp, 5);
+  if (nums)
+  {
+    for (int i = 0; i < nums; ++i)
+    {
+      display.setCursor(16, 16 + i * 24);
+      display.printf("Raw X:%03d  Y:%03d", tp[i].x, tp[i].y);
+    }
+
+    display.convertRawXY(tp, nums);
+
+    for (int i = 0; i < nums; ++i)
+    {
+      display.setCursor(16, 128 + i * 24);
+      display.printf("Convert X:%03d  Y:%03d", tp[i].x, tp[i].y);
+    }
+    display.display();
+
+    display.setColor(display.isEPD() ? TFT_BLACK : TFT_WHITE);
+    for (int i = 0; i < nums; ++i)
+    {
+      int s = tp[i].size + 3;
+      switch (tp[i].id)
+      {
+      case 0:
+        display.fillCircle(tp[i].x, tp[i].y, s);
+        break;
+      case 1:
+        display.drawLine(tp[i].x - s, tp[i].y - s, tp[i].x + s, tp[i].y + s);
+        display.drawLine(tp[i].x - s, tp[i].y + s, tp[i].x + s, tp[i].y - s);
+        break;
+      default:
+        display.fillTriangle(tp[i].x - s, tp[i].y + s, tp[i].x + s, tp[i].y + s, tp[i].x, tp[i].y - s);
+        break;
+      }
+      display.display();
+    }
+    drawed = true;
+  }
+  else if (drawed)
+  {
+    drawed = false;
+    display.waitDisplay();
+    display.clear();
+    display.display();
+  }
+  delayMicroseconds(100);
+  // vTaskDelay(1);
+}
 
 void loop(void)
 {
