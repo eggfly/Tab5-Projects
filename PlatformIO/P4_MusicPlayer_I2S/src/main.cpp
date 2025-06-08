@@ -4,9 +4,12 @@
 #include "Wire.h"
 #include "ES8388.h"
 #include "Audio.h"
+#include "MyES8388.h"
 
 #include <vector>
 #include <unordered_set>
+
+#define PIN_BOOT (35)
 
 // #define ENABLE_SDCARD_SPI 1
 // #define ENABLE_WIFI 1
@@ -279,6 +282,7 @@ void setup()
     Serial.begin(115200);
     Serial.println("\r\nReset");
     Serial.printf_P(PSTR("Free mem=%ld\n"), ESP.getFreeHeap());
+    pinMode(PIN_BOOT, INPUT_PULLUP);
 #ifdef ENABLE_SDCARD_SDMMC
     const bool use1BitMode = false;
     if (use1BitMode)
@@ -332,8 +336,65 @@ void setup()
     es.volume(ES8388::ES_MAIN, volume);
     es.volume(ES8388::ES_OUT1, 100);
     es.volume(ES8388::ES_OUT2, 100);
+
+    // es.write_reg(ES8388_ADDR, ES8388_DACCONTROL8, 0);
     // dac.SetVolumeHeadphone(volume);
-    // dac.DumpRegisters();
+    dac.DumpRegisters();
+    /*
+Reg 0x00 = 0x12
+Reg 0x01 = 0x50
+Reg 0x02 = 0x00
+Reg 0x03 = 0x00
+Reg 0x04 = 0x3c
+Reg 0x05 = 0x00
+Reg 0x06 = 0x00
+Reg 0x07 = 0x7c
+Reg 0x08 = 0x00
+Reg 0x09 = 0x88
+Reg 0x0a = 0xf0
+Reg 0x0b = 0x82
+Reg 0x0c = 0x0e
+Reg 0x0d = 0x02
+Reg 0x0e = 0x30
+Reg 0x0f = 0x20
+Reg 0x10 = 0x20
+Reg 0x11 = 0x20
+Reg 0x12 = 0x38
+Reg 0x13 = 0xb0
+Reg 0x14 = 0x32
+Reg 0x15 = 0x06
+Reg 0x16 = 0x00
+Reg 0x17 = 0x18
+Reg 0x18 = 0x02
+Reg 0x19 = 0x00
+Reg 0x1a = 0x3a
+Reg 0x1b = 0x3a
+Reg 0x1c = 0x08
+Reg 0x1d = 0x00
+Reg 0x1e = 0x1f
+Reg 0x1f = 0xf7
+Reg 0x20 = 0xfd
+Reg 0x21 = 0xff
+Reg 0x22 = 0x1f
+Reg 0x23 = 0xf7
+Reg 0x24 = 0xfd
+Reg 0x25 = 0xff
+Reg 0x26 = 0x1b
+Reg 0x27 = 0x90
+Reg 0x28 = 0x28
+Reg 0x29 = 0x28
+Reg 0x2a = 0x90
+Reg 0x2b = 0x80
+Reg 0x2c = 0x00
+Reg 0x2d = 0x00
+Reg 0x2e = 0x21
+Reg 0x2f = 0x21
+Reg 0x30 = 0x21
+Reg 0x31 = 0x21
+Reg 0x32 = 0x00
+Reg 0x33 = 0xaa
+Reg 0x34 = 0xaa
+ */
 
     // Enable amplifier
     pinMode(GPIO_PA_EN, OUTPUT);
@@ -372,6 +433,7 @@ void parseSerialCommand()
         r.trim();
         if (r.equalsIgnoreCase("n"))
         {
+            dac.DumpRegisters();
             Serial.println("play next song");
             startNextSong(true);
         }
@@ -462,9 +524,9 @@ void parseSerialCommand()
 
 void handleButton()
 {
-    if (digitalRead(0) == LOW)
+    if (digitalRead(PIN_BOOT) == LOW)
     {
-        while (digitalRead(0) == LOW)
+        while (digitalRead(PIN_BOOT) == LOW)
         {
             delay(1);
         }

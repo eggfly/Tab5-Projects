@@ -269,3 +269,12 @@ bool ES8388::identify(int32_t sda, int32_t scl, uint32_t frequency)
     return Wire.endTransmission() == 0;
 }
 
+
+void ES8388::DumpRegisters(){
+    for (int i = 0; i < 53; i++){
+        uint8_t reg = 0;
+        read_reg(ES8388_ADDR, i, reg);
+        // reg = ReadReg(i);
+        Serial.printf("Reg 0x%02x(%d) = 0x%02x\n", i, i, reg);
+    }
+}
